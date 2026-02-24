@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>生日快乐~</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <style>
+    html, body {margin:0;padding:0;width:100vw;height:100vh;overflow:hidden;background: #87CEEB;}
+    #progress-container {position:absolute;width:80vw;left:10vw;top:45vh;height:22px;display:flex;align-items:center;z-index:99;}
+    #progress-bar {width: 100%;height: 14px;border-radius:8px;background:rgba(255,255,255,0.3);overflow:hidden;}
+    #progress-inner {height: 100%;width: 0%;background: #fff;border-radius:8px;transition:width 2.2s cubic-bezier(.85,.07,.43,1.02);}
+    #main-canvas {position: absolute;top:0; left:0;width:100vw;height:100vh;z-index:3;display:block;}
+    .btn-group {position:absolute;left:50%;transform:translateX(-50%);width:100vw;text-align:center;z-index:20;pointer-events:none;}
+    .birthday-btn {min-width:120px;padding:15px 38px;font-size:20px;border:none;border-radius:28px;background:#fffbea;box-shadow:0 6px 28px 0 rgba(0,0,0,0.10);color:#f06d9e;margin:0 10px;margin-top:28px;pointer-events:auto;font-weight:bold;outline:none;cursor:pointer;transition:all .3s;user-select:none;display:none;}
+    @media (max-width:600px){.birthday-btn{font-size:18px;padding:13px 22px;border-radius:24px;}#progress-container{height:18px;}#progress-bar{height:10px;border-radius:6px;}#progress-inner{border-radius:6px;}}
+  </style>
+</head>
+<body>
+  <!-- 进度条 -->
+  <div id="progress-container">
+    <div id="progress-bar">
+      <div id="progress-inner"></div>
+    </div>
+  </div>
+  <!-- 主动画canvas -->
+  <canvas id="main-canvas"></canvas>
+  <!-- 交互按钮组 -->
+  <div class="btn-group">
+    <button id="btn1" class="birthday-btn">许愿</button>
+    <button id="btn2" class="birthday-btn">吹蜡烛</button>
+  </div>
+<script>
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+let W = window.innerWidth, H = window.innerHeight;
+function resizeCanvas(){W = window.innerWidth;H = window.innerHeight;canvas.width=W;canvas.height=H;}
+window.addEventListener('resize', resizeCanvas);resizeCanvas();
+
+// ---------- 进度条 ----------
+const progressInner = document.getElementById('progress-inner');
+const progressCont = document.getElementById('progress-container');
+function animateProgressBar(){
+  setTimeout(()=>{progressInner.style.width = "100%";}, 250);
+  setTimeout(()=>{
+    progressCont.style.opacity = 0;
+    setTimeout(()=>progressCont.style.display="none", 700);
+    setTimeout(()=>startParticleStage(), 750);
+  },2200);
+}
+animateProgressBar();
+
+// ============= 动态粒子文字 =============
+const textList = [
+  {txt:"段万军", fontRatio: 0.20, yRatio: 0.43},     // 粒子文字显示较大，居中偏上
+  {txt:"祝你",   fontRatio: 0.20, yRatio: 0.53},     // 字也大，居中
+  {txt:"生日快乐~", fontRatio: 0.145, yRatio: 0.65}  // 字稍小，居中偏下
+];
+let particles=[], textTargets=[];
+const PARTICLE_COUNT = W < 700 ? 500 : 950;
+let textPhase = 0;
+function makeParticles(){
+  particles=[];for(let i=0;i<PARTICLE_COUNT;++i){
+    particles.push({x:Math.random()*W, y:Math.random()*H, tx:Math.random()*W, ty:Math.random()*H, vx:0, vy:0,r:Math.random()*1.5+2, alpha:1});
+  }
+}
+function generateTextDots(txt, fontRatio, yRatio) {
+  let fontSize = Math.floor(H * fontRatio);
+  let tempCanvas = document.createElement("canvas");
+  tempCanvas.width = W; tempCanvas.height = H;
+  let tctx = tempCanvas.getContext("2d");
+  tctx.clearRect(0,0,W,H);
+  tctx.font = `bold ${fontSize}px 'PingFang SC','Microsoft YaHei',Arial,sans-serif`;
+  tctx.textAlign = "center";
+  tctx.textBaseline = "middle";
+  tctx.fillStyle = "#fff";
+  tctx.fillText(txt, W/2, H*yRatio);
+  let image = tctx.getImageData(0,0,W,H).data;
+  let dots = [], gap = W<600 ? 5 : 4;
+  for(let y=0;y<H;y+=gap){
+    for(let x=0;x<W;x+=gap){
+      if(image[(y*W + x)*4+3]>150) dots.push({x,y});
+    }
+  }
+  while (dots.length < PARTICLE_COUNT) dots = dots.concat(dots);
+  return dots.slice(0, PARTICLE_COUNT);
+}
+function setParticlesTargetToText(txt, fontRatio, yRatio){
+  textTargets = generateTextDots(txt, fontRatio, yRatio);
+  for(let i=0;i<particles.length;++i){
+    particles[i].tx = textTargets[i].x;
+    particles[i].ty = textTargets[i].y;
+  }
+}
+function setParticlesScatter(){
+  for(let i=0;i<particles.length;++i){
+    particles[i].tx = Math.random()*W;
+    particles[i].ty = Math.random()*H;
+  }
+}
+function animateParticleText(){
+  ctx.clearRect(0,0,W,H);
+  for(let p of particles){
+    let dx=p.tx-p.x, dy=p.ty-p.y;
+    p.vx = dx*0.13; p.vy = dy*0.13;
+    p.x += p.vx; p.y += p.vy;
+    ctx.save();
+    ctx.globalAlpha = 0.87*p.alpha;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+    ctx.fillStyle = "#fff";
+    ctx.shadowColor="#dde9ff";
+    ctx.shadowBlur=2*Math.abs(p.r-2.5)+3;
+    ctx.fill();
+    ctx.restore();
+  }
+  if(stage===1) requestAnimationFrame(animateParticleText);
+}
+// 粒子流程
+function textParticleStage(){
+  let timeline=[];
+  for(let it of textList){
+    timeline.push({type:'gather', ...it});
+    timeline.push({type:'scatter'});
+  }
+  timeline.pop();
+  let curPhase = 0;
+  function nextPhase(){
+    if(stage!==1) return;
+    let p=timeline[curPhase];
+    if(!p){
+      // 所有粒子动画完毕，进入倒计时
+      stage=10;
+      setTimeout(startCountdown,400);
+      return;
+    }
+    if(p.type==='gather'){
+      setParticlesTargetToText(p.txt, p.fontRatio, p.yRatio);
+    }else{
+      setParticlesScatter();
+    }
+    curPhase++;
+    setTimeout(nextPhase, p.type==='gather'? 1900: 1050);
+  }
+  nextPhase();
+}
+function startParticleStage(){
+  stage=1;makeParticles();
+  animateParticleText();setTimeout(textParticleStage,500);
+}
+
+// ============= 粒子消失、倒计时 =============
+let countdownNumber = 3;
+let countdownAlpha = 1;
+function startCountdown(){
+  stage=10; // 倒计时阶段
+  countdownNumber = 3; countdownAlpha = 1;
+  function drawCountdown(){
+    ctx.clearRect(0,0,W,H);
+    ctx.save();
+    ctx.globalAlpha = countdownAlpha;
+    ctx.font = `bold ${Math.floor(H*0.21)}px 'Arial Black','Arial',sans-serif`;
+    ctx.fillStyle = "#fff";
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.shadowColor="#ffbacf";
+    ctx.shadowBlur=20;
+    ctx.fillText(countdownNumber, W/2, H/2);
+    ctx.restore();
+    if(stage===10) requestAnimationFrame(drawCountdown);
+  }
+  drawCountdown();
+  function next(){
+    countdownAlpha = 1;
+    setTimeout(()=>{
+      countdownAlpha = 0.64;
+      setTimeout(()=>{
+        countdownAlpha = 0.26;
+        setTimeout(()=>{
+          countdownNumber--;
+          countdownAlpha = 1;
+          if(countdownNumber>0) next();
+          else {
+            stage=3;
+            setTimeout(startCakeScene,350);
+          }
+        },330);
+      },140);
+    },540);
+  }
+  next();
+}
+
+// ============= 蛋糕+气球+横幅 环节 =============
+let bannerAnim=0,bannerShakePts=[];
+function drawBanner(){
+  let bannerW = Math.min(W*0.68, 420), bannerH = 58;
+  let cx = W/2, cy = H*0.14;
+  if(bannerShakePts.length!==8){bannerShakePts=Array(8).fill(0).map(()=>Math.random());}
+  for(let i=0;i<bannerShakePts.length;++i){
+    let f = bannerAnim*0.5+i;bannerShakePts[i]=Math.sin(f*0.046+i)*7 + Math.cos(0.3*bannerAnim+i)*4;
+  }
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx-bannerW/2,cy+bannerShakePts[0]);
+  for(let i=1;i<bannerShakePts.length;++i){
+    let x = cx-bannerW/2 + i*(bannerW/(bannerShakePts.length-1));
+    ctx.lineTo(x, cy+bannerShakePts[i]);
+  }
+  ctx.lineTo(cx+bannerW/2, cy+bannerH+bannerShakePts[7]);
+  for(let i=bannerShakePts.length-2;i>=0;--i){
+    let x = cx-bannerW/2 + i*(bannerW/(bannerShakePts.length-1));
+    ctx.lineTo(x, cy+bannerH+bannerShakePts[i]);
+  }
+  ctx.closePath();
+  let grad=ctx.createLinearGradient(cx-bannerW/2,cy, cx+bannerW/2,cy+bannerH);
+  grad.addColorStop(0.0,"#fff7f0");
+  grad.addColorStop(1.0,"#f9cdf2");
+  ctx.fillStyle=grad;
+  ctx.globalAlpha=0.94;
+  ctx.shadowColor="#ea72ae";
+  ctx.shadowBlur=11;
+  ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  ctx.lineWidth=5;
+  ctx.strokeStyle = "rgba(238,86,119,.68)";
+  ctx.setLineDash([bannerH+bannerAnim%bannerH-10,60]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.save();
+  ctx.font=`bold ${Math.floor(bannerH*0.6)}px 'Comic Sans MS',Arial,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle="#ee4c83";
+  ctx.shadowBlur=1.5;
+  ctx.shadowColor="#fff";
+  ctx.fillText("Happy Birthday",cx,cy+bannerH*0.52);
+  ctx.restore();
+  ctx.restore();
+}
+function drawBalloon(x, y, color, sway=0.19){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(Math.sin(Date.now()/1100 + x/999)*sway);
+  ctx.beginPath();
+  ctx.ellipse(0,0,23,38,0,0,2*Math.PI);
+  ctx.fillStyle=color;
+  ctx.shadowColor=color;
+  ctx.shadowBlur=9;
+  ctx.globalAlpha=0.95;
+  ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  ctx.beginPath();
+  ctx.ellipse(-5,-9,6,15,Math.PI/8,0,2*Math.PI);
+  ctx.fillStyle="#FFF";
+  ctx.globalAlpha=0.18;
+  ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(0,37);
+  ctx.bezierCurveTo(0,48, 0,65, 6,79);
+  ctx.stroke();ctx.restore();ctx.restore();
+}
+let cakeTick=0;
+let candleIsLit = true;
+function drawChocoCake(){
+  let x=W/2, y=H*0.52;
+  let baseR = Math.min(W,400)/2.9 + 10*Math.sin(cakeTick/2);
+  ctx.save();ctx.translate(x, y);
+  // Q弹拉伸
+  let qY = 1+Math.sin(cakeTick/1.2)*0.16;ctx.scale(1, qY);
+  // 底座
+  ctx.beginPath();
+  ctx.ellipse(0, 46, baseR*0.83, baseR*0.23, 0, 0, 2 * Math.PI);
+  ctx.fillStyle = "#ac7e54";
+  ctx.globalAlpha=0.98;ctx.fill();
+  // 主体巧克力
+  ctx.beginPath();
+  ctx.moveTo(-baseR, 0);ctx.lineTo(-baseR, 41);
+  ctx.ellipse(0,41, baseR*0.83, baseR*0.23,0,Math.PI,0,true);
+  ctx.lineTo(baseR, 0);
+  ctx.ellipse(0,0, baseR, baseR*0.55, 0, 0, Math.PI);
+  ctx.closePath();
+  ctx.fillStyle = "#83553b";
+  ctx.shadowColor = "#6a4c35"; ctx.shadowBlur = 18;
+  ctx.globalAlpha=0.97; ctx.fill();
+  ctx.shadowBlur=0;
+  // 奶油
+  ctx.save();ctx.globalAlpha=0.90;ctx.beginPath();
+  ctx.ellipse(0, 0, baseR, baseR*0.55, 0, 0, Math.PI);
+  ctx.bezierCurveTo(baseR*0.8, 18, baseR*0.7,28,0,28);
+  ctx.bezierCurveTo(-baseR*0.7,28,-baseR*0.8,18,-baseR,0);
+  ctx.closePath();ctx.fillStyle="#ffe5ef";ctx.fill();ctx.restore();
+  // 巧克力顶面
+  ctx.save();ctx.beginPath();
+  ctx.ellipse(0,4, baseR*0.8, baseR*0.26, 0, 0, 2 * Math.PI);
+  ctx.fillStyle="#94514a";
+  ctx.globalAlpha=0.89+0.09*Math.cos(cakeTick/12);
+  ctx.shadowColor="#c49b7a";ctx.shadowBlur=8;ctx.fill();ctx.restore();
+  // 小装饰
+  for(let i=0;i<6;++i){
+    ctx.save();ctx.rotate(i*Math.PI/3 + 0.6*Math.sin(cakeTick/4+i));
+    ctx.beginPath();
+    ctx.arc(baseR*0.48, -baseR*0.1, 5+2*Math.sin(cakeTick/1.6+i),0,2*Math.PI);
+    ctx.fillStyle = ["#fab4a9","#fdf480","#8de1e9","#c1f09a","#e7b2ef","#fadc8b"][i];
+    ctx.globalAlpha=0.65;ctx.fill();ctx.restore();
+  }
+  // 蜡烛
+  drawCandle(0,-18-qY*8,12, cakeTick*0.6);ctx.restore();
+}
+function drawCandle(x0,y0,h, q){
+  ctx.save();
+  ctx.translate(x0,y0);
+  ctx.strokeStyle="#7d555c";
+  ctx.lineWidth=2.1;
+  ctx.fillStyle="#f6aeae";
+  ctx.beginPath();
+  ctx.roundRect(-4,0,8,h,3);ctx.fill();ctx.stroke();
+  ctx.beginPath();
+  ctx.rect(-1.1,-3,2.2,8);
+  ctx.fillStyle="#392a21";ctx.fill();
+  // 火焰
+  if(candleIsLit){
+    let t = Date.now()/350;
+    ctx.save();ctx.globalAlpha = Math.random()*0.12+0.85;
+    ctx.translate(0,-7-Math.sin(q+t)*2.6);
+    ctx.rotate(Math.sin(q*1.2+t)*0.06);
+    ctx.beginPath();ctx.ellipse(0,0,3.2,10,0,0,2*Math.PI);
+    ctx.fillStyle="#ffeeb6";ctx.shadowColor="#fff800";
+    ctx.shadowBlur=14+Math.random()*5;ctx.fill();
+    ctx.shadowBlur=0;ctx.beginPath();
+    ctx.ellipse(0,3.7,1.2,3.5,0,0,2*Math.PI);
+    ctx.fillStyle="#ffc500";ctx.globalAlpha=0.59;
+    ctx.fill();ctx.restore();
+  }
+  ctx.restore();
+}
+function animateCakeScene(){
+  ctx.clearRect(0,0,W,H);
+  drawBalloon(W*0.20, H*0.09+15*Math.sin(Date.now()/1007), "#62d5fa");
+  drawBalloon(W*0.80, H*0.09+16*Math.cos(Date.now()/983), "#fd77b0");
+  drawBanner();
+  drawChocoCake();
+  document.querySelector('.btn-group').style.top = (H*0.72)+'px';
+  document.querySelector('.btn-group').style.width = W+'px';
+  cakeTick+=0.12;
+  bannerAnim+=(0.065+0.03*Math.sin(bannerAnim/4));
+  if(stage===3 || stage===4 || stage===5) requestAnimationFrame(animateCakeScene);
+}
+function startCakeScene(){
+  stage = 3;
+  candleIsLit = true;
+  btn1.style.display="inline-block";
+  btn2.style.display="none";
+  animateCakeScene();
+}
+const btn1 = document.getElementById('btn1');const btn2 = document.getElementById('btn2');
+btn1.onclick = function(){
+  if(stage===3){
+    stage=4;btn1.style.display="none";
+    setTimeout(()=>{btn2.style.display="inline-block";},600);
+  }
+}
+btn2.onclick = function(){
+  if(stage===4){
+    stage=5;btn2.style.display="none";candleIsLit = false;
+    document.body.style.background="#15162B";
+    setTimeout(()=>{startFireworkWishes();},800);
+  }
+}
+
+// ================ 祝福语+烟花阶段 ================
+let fireworks=[],fireParticles=[];
+function spawnFirework(){
+  let x = Math.random()*W*0.6+W*0.2;
+  let c = ["#ff4081","#fff300","#3eb3fa","#fff","#ffae1e","#1ee4a7","#fb535e"];
+  fireworks.push({x: Math.random()<0.2?W/2:x, y: H, tx: x, ty: Math.random()*H*0.49+H*0.13, color: c[Math.floor(Math.random()*c.length)],state:0,vx:0,vy:0,tick:0});
+}
+function animateFireworks(){
+  ctx.clearRect(0,0,W,H);
+  for(let fw of fireworks){
+    if(fw.state===0){
+      let dx = (fw.tx-fw.x)*0.052, dy = (fw.ty-fw.y)*0.07;fw.x += dx;fw.y += dy;fw.tick++;
+      ctx.save();ctx.beginPath();ctx.arc(fw.x,fw.y,4.5,0,2*Math.PI);ctx.fillStyle="#fff";
+      ctx.globalAlpha=0.66;ctx.shadowColor="#fff";ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.restore();
+      if(Math.abs(fw.y-fw.ty)<12){
+        fw.state=1;
+        for(let k=0;k<36+Math.floor(Math.random()*16);++k){
+          let ang = k*Math.PI*2/48 + Math.random()*0.11;
+          let spd = (Math.random()*2.6+2.2)*(H/900);
+          fireParticles.push({
+            x:fw.x, y:fw.y, vx: Math.cos(ang)*spd, vy:Math.sin(ang)*spd, color: fw.color, alpha: 1, r: Math.random()*3.1+2.5, fade: Math.random()*0.012+0.022, gravity: (Math.random()*0.13+0.018)*(H/900)
+          });
+        }
+      }
+    }
+  }
+  fireworks = fireworks.filter(fw=>fw.state!==1);
+  for(let fp of fireParticles){
+    fp.x+=fp.vx;fp.y+=fp.vy;fp.vy+=fp.gravity;fp.alpha-=fp.fade;
+    if(Math.random()<0.14){ctx.beginPath();ctx.arc(fp.x+Math.random()*9-4.5,fp.y+Math.random()*8-4,fp.r*0.77,0,2*Math.PI);ctx.fillStyle="#fff";ctx.globalAlpha=0.05;ctx.fill();}
+    ctx.save();ctx.beginPath();ctx.arc(fp.x,fp.y,fp.r,0,2*Math.PI);ctx.fillStyle=fp.color;ctx.globalAlpha=0.76*fp.alpha;ctx.shadowColor=fp.color;ctx.shadowBlur=13;ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=fp.alpha*0.60;ctx.beginPath();ctx.arc(fp.x,fp.y,fp.r*0.42,0,2*Math.PI);ctx.fillStyle="#fff";ctx.fill();ctx.restore();
+  }
+  fireParticles = fireParticles.filter(fp=>fp.alpha>0.08);
+  if(stage===5&&Math.random()<0.075){spawnFirework();}
+  requestAnimationFrame(()=>{if(stage===5) animateFireworks();});
+}
+const wishesArr = [
+  "生日快乐!","天天开心！","幸福常伴！","健康长寿！",
+  "心想事成！","平安幸福！","青春常驻！","梦想成真！",
+  "好运连连！","生活甜美！","万事如意！","愿笑容常在！",
+  "友谊长存！","爱情甜蜜！","事业腾飞！"
+];
+function randomWishPos(){
+  let left = Math.random()*0.65 + 0.04;
+  let top = Math.random()*0.57 + 0.14;
+  return {left, top};
+}
+function showWishDialog(msg){
+  let dlg = document.createElement("div");
+  const sz = W>540 ? 1.04+Math.random()*0.3 : 0.94+Math.random()*0.28;
+  dlg.style.position = "fixed";
+  let pos = randomWishPos();
+  dlg.style.left = (pos.left*100) + "%";dlg.style.top = (pos.top*100) + "%";
+  dlg.style.transform = `translate(-50%,-50%) scale(${sz})`;
+  dlg.style.background = "linear-gradient(148deg, #fffbe6 85%, #fad7fb 100%)";
+  dlg.style.color = "#eb4973";
+  dlg.style.padding = "18px 30px";
+  dlg.style.fontSize = W>540? "1.23em":"1em";dlg.style.fontWeight = "bold";
+  dlg.style.borderRadius = "22px";dlg.style.boxShadow = "0 5px 24px 0 rgba(52,34,87,0.11)";
+  dlg.style.opacity = 0;dlg.style.transition = "opacity .44s, transform .85s cubic-bezier(.5,1.70,.2,1)";
+  dlg.style.zIndex = 303 + Math.floor(Math.random()*30);dlg.style.pointerEvents='none';
+  dlg.innerText = msg;document.body.appendChild(dlg);
+  setTimeout(()=>{dlg.style.opacity=1; dlg.style.transform += " scale(1.1)";},8);
+  setTimeout(()=>{dlg.style.opacity=0; dlg.style.transform += " scale(0.65)";setTimeout(()=>{dlg.remove();},500);},1200+Math.random()*600);
+}
+function showWishes(){
+  let n = 4+Math.floor(Math.random()*4);// 4~7条
+  let idxArr = Array.from({length:wishesArr.length}).map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,n);
+  idxArr.forEach((idx,i)=>{
+    setTimeout(()=>{showWishDialog(wishesArr[idx]);}, Math.random()*300 + i*180);
+  });
+}
+function startFireworkWishes(){
+  stage = 5;fireworks=[];fireParticles=[];
+  for(let i=0;i<2+(W>700?4:1);++i) setTimeout(spawnFirework,i*350);
+  animateFireworks();
+  let wishPop = setInterval(()=>{
+    if(stage!==5){clearInterval(wishPop);return;}
+    showWishes();
+  }, 1200);
+}
+</script>
+</body>
+</html>
