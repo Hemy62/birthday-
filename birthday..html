@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>ÉúÈÕ¿ìÀÖ~</title>
+  <title>ç”Ÿæ—¥å¿«ä¹~</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
   <style>
     html, body {margin:0;padding:0;width:100vw;height:100vh;overflow:hidden;background: #87CEEB;}
@@ -16,18 +16,18 @@
   </style>
 </head>
 <body>
-  <!-- ½ø¶ÈÌõ -->
+  <!-- è¿›åº¦æ¡ -->
   <div id="progress-container">
     <div id="progress-bar">
       <div id="progress-inner"></div>
     </div>
   </div>
-  <!-- Ö÷¶¯»­canvas -->
+  <!-- ä¸»åŠ¨ç”»canvas -->
   <canvas id="main-canvas"></canvas>
-  <!-- ½»»¥°´Å¥×é -->
+  <!-- äº¤äº’æŒ‰é’®ç»„ -->
   <div class="btn-group">
-    <button id="btn1" class="birthday-btn">ĞíÔ¸</button>
-    <button id="btn2" class="birthday-btn">´µÀ¯Öò</button>
+    <button id="btn1" class="birthday-btn">è®¸æ„¿</button>
+    <button id="btn2" class="birthday-btn">å¹èœ¡çƒ›</button>
   </div>
 <script>
 const canvas = document.getElementById('main-canvas');
@@ -36,7 +36,7 @@ let W = window.innerWidth, H = window.innerHeight;
 function resizeCanvas(){W = window.innerWidth;H = window.innerHeight;canvas.width=W;canvas.height=H;}
 window.addEventListener('resize', resizeCanvas);resizeCanvas();
 
-// ---------- ½ø¶ÈÌõ ----------
+// ---------- è¿›åº¦æ¡ ----------
 const progressInner = document.getElementById('progress-inner');
 const progressCont = document.getElementById('progress-container');
 function animateProgressBar(){
@@ -49,11 +49,11 @@ function animateProgressBar(){
 }
 animateProgressBar();
 
-// ============= ¶¯Ì¬Á£×ÓÎÄ×Ö =============
+// ============= åŠ¨æ€ç²’å­æ–‡å­— =============
 const textList = [
-  {txt:"¶ÎÍò¾ü", fontRatio: 0.20, yRatio: 0.43},     // Á£×ÓÎÄ×ÖÏÔÊ¾½Ï´ó£¬¾ÓÖĞÆ«ÉÏ
-  {txt:"×£Äã",   fontRatio: 0.20, yRatio: 0.53},     // ×ÖÒ²´ó£¬¾ÓÖĞ
-  {txt:"ÉúÈÕ¿ìÀÖ~", fontRatio: 0.145, yRatio: 0.65}  // ×ÖÉÔĞ¡£¬¾ÓÖĞÆ«ÏÂ
+  {txt:"æ®µä¸‡å†›", fontRatio: 0.20, yRatio: 0.43},     // ç²’å­æ–‡å­—æ˜¾ç¤ºè¾ƒå¤§ï¼Œå±…ä¸­åä¸Š
+  {txt:"ç¥ä½ ",   fontRatio: 0.20, yRatio: 0.53},     // å­—ä¹Ÿå¤§ï¼Œå±…ä¸­
+  {txt:"ç”Ÿæ—¥å¿«ä¹~", fontRatio: 0.145, yRatio: 0.65}  // å­—ç¨å°ï¼Œå±…ä¸­åä¸‹
 ];
 let particles=[], textTargets=[];
 const PARTICLE_COUNT = W < 700 ? 500 : 950;
@@ -115,7 +115,7 @@ function animateParticleText(){
   }
   if(stage===1) requestAnimationFrame(animateParticleText);
 }
-// Á£×ÓÁ÷³Ì
+// ç²’å­æµç¨‹
 function textParticleStage(){
   let timeline=[];
   for(let it of textList){
@@ -128,7 +128,7 @@ function textParticleStage(){
     if(stage!==1) return;
     let p=timeline[curPhase];
     if(!p){
-      // ËùÓĞÁ£×Ó¶¯»­Íê±Ï£¬½øÈëµ¹¼ÆÊ±
+      // æ‰€æœ‰ç²’å­åŠ¨ç”»å®Œæ¯•ï¼Œè¿›å…¥å€’è®¡æ—¶
       stage=10;
       setTimeout(startCountdown,400);
       return;
@@ -148,11 +148,11 @@ function startParticleStage(){
   animateParticleText();setTimeout(textParticleStage,500);
 }
 
-// ============= Á£×ÓÏûÊ§¡¢µ¹¼ÆÊ± =============
+// ============= ç²’å­æ¶ˆå¤±ã€å€’è®¡æ—¶ =============
 let countdownNumber = 3;
 let countdownAlpha = 1;
 function startCountdown(){
-  stage=10; // µ¹¼ÆÊ±½×¶Î
+  stage=10; // å€’è®¡æ—¶é˜¶æ®µ
   countdownNumber = 3; countdownAlpha = 1;
   function drawCountdown(){
     ctx.clearRect(0,0,W,H);
@@ -190,7 +190,7 @@ function startCountdown(){
   next();
 }
 
-// ============= µ°¸â+ÆøÇò+ºá·ù »·½Ú =============
+// ============= è›‹ç³•+æ°”çƒ+æ¨ªå¹… ç¯èŠ‚ =============
 let bannerAnim=0,bannerShakePts=[];
 function drawBanner(){
   let bannerW = Math.min(W*0.68, 420), bannerH = 58;
@@ -268,14 +268,14 @@ function drawChocoCake(){
   let x=W/2, y=H*0.52;
   let baseR = Math.min(W,400)/2.9 + 10*Math.sin(cakeTick/2);
   ctx.save();ctx.translate(x, y);
-  // Qµ¯À­Éì
+  // Qå¼¹æ‹‰ä¼¸
   let qY = 1+Math.sin(cakeTick/1.2)*0.16;ctx.scale(1, qY);
-  // µ××ù
+  // åº•åº§
   ctx.beginPath();
   ctx.ellipse(0, 46, baseR*0.83, baseR*0.23, 0, 0, 2 * Math.PI);
   ctx.fillStyle = "#ac7e54";
   ctx.globalAlpha=0.98;ctx.fill();
-  // Ö÷ÌåÇÉ¿ËÁ¦
+  // ä¸»ä½“å·§å…‹åŠ›
   ctx.beginPath();
   ctx.moveTo(-baseR, 0);ctx.lineTo(-baseR, 41);
   ctx.ellipse(0,41, baseR*0.83, baseR*0.23,0,Math.PI,0,true);
@@ -286,19 +286,19 @@ function drawChocoCake(){
   ctx.shadowColor = "#6a4c35"; ctx.shadowBlur = 18;
   ctx.globalAlpha=0.97; ctx.fill();
   ctx.shadowBlur=0;
-  // ÄÌÓÍ
+  // å¥¶æ²¹
   ctx.save();ctx.globalAlpha=0.90;ctx.beginPath();
   ctx.ellipse(0, 0, baseR, baseR*0.55, 0, 0, Math.PI);
   ctx.bezierCurveTo(baseR*0.8, 18, baseR*0.7,28,0,28);
   ctx.bezierCurveTo(-baseR*0.7,28,-baseR*0.8,18,-baseR,0);
   ctx.closePath();ctx.fillStyle="#ffe5ef";ctx.fill();ctx.restore();
-  // ÇÉ¿ËÁ¦¶¥Ãæ
+  // å·§å…‹åŠ›é¡¶é¢
   ctx.save();ctx.beginPath();
   ctx.ellipse(0,4, baseR*0.8, baseR*0.26, 0, 0, 2 * Math.PI);
   ctx.fillStyle="#94514a";
   ctx.globalAlpha=0.89+0.09*Math.cos(cakeTick/12);
   ctx.shadowColor="#c49b7a";ctx.shadowBlur=8;ctx.fill();ctx.restore();
-  // Ğ¡×°ÊÎ
+  // å°è£…é¥°
   for(let i=0;i<6;++i){
     ctx.save();ctx.rotate(i*Math.PI/3 + 0.6*Math.sin(cakeTick/4+i));
     ctx.beginPath();
@@ -306,7 +306,7 @@ function drawChocoCake(){
     ctx.fillStyle = ["#fab4a9","#fdf480","#8de1e9","#c1f09a","#e7b2ef","#fadc8b"][i];
     ctx.globalAlpha=0.65;ctx.fill();ctx.restore();
   }
-  // À¯Öò
+  // èœ¡çƒ›
   drawCandle(0,-18-qY*8,12, cakeTick*0.6);ctx.restore();
 }
 function drawCandle(x0,y0,h, q){
@@ -320,7 +320,7 @@ function drawCandle(x0,y0,h, q){
   ctx.beginPath();
   ctx.rect(-1.1,-3,2.2,8);
   ctx.fillStyle="#392a21";ctx.fill();
-  // »ğÑæ
+  // ç«ç„°
   if(candleIsLit){
     let t = Date.now()/350;
     ctx.save();ctx.globalAlpha = Math.random()*0.12+0.85;
@@ -370,7 +370,7 @@ btn2.onclick = function(){
   }
 }
 
-// ================ ×£¸£Óï+ÑÌ»¨½×¶Î ================
+// ================ ç¥ç¦è¯­+çƒŸèŠ±é˜¶æ®µ ================
 let fireworks=[],fireParticles=[];
 function spawnFirework(){
   let x = Math.random()*W*0.6+W*0.2;
@@ -407,10 +407,10 @@ function animateFireworks(){
   requestAnimationFrame(()=>{if(stage===5) animateFireworks();});
 }
 const wishesArr = [
-  "ÉúÈÕ¿ìÀÖ!","ÌìÌì¿ªĞÄ£¡","ĞÒ¸£³£°é£¡","½¡¿µ³¤ÊÙ£¡",
-  "ĞÄÏëÊÂ³É£¡","Æ½°²ĞÒ¸££¡","Çà´º³£×¤£¡","ÃÎÏë³ÉÕæ£¡",
-  "ºÃÔËÁ¬Á¬£¡","Éú»îÌğÃÀ£¡","ÍòÊÂÈçÒâ£¡","Ô¸Ğ¦Èİ³£ÔÚ£¡",
-  "ÓÑÒê³¤´æ£¡","°®ÇéÌğÃÛ£¡","ÊÂÒµÌÚ·É£¡"
+  "ç”Ÿæ—¥å¿«ä¹!","å¤©å¤©å¼€å¿ƒï¼","å¹¸ç¦å¸¸ä¼´ï¼","å¥åº·é•¿å¯¿ï¼",
+  "å¿ƒæƒ³äº‹æˆï¼","å¹³å®‰å¹¸ç¦ï¼","é’æ˜¥å¸¸é©»ï¼","æ¢¦æƒ³æˆçœŸï¼",
+  "å¥½è¿è¿è¿ï¼","ç”Ÿæ´»ç”œç¾ï¼","ä¸‡äº‹å¦‚æ„ï¼","æ„¿ç¬‘å®¹å¸¸åœ¨ï¼",
+  "å‹è°Šé•¿å­˜ï¼","çˆ±æƒ…ç”œèœœï¼","äº‹ä¸šè…¾é£ï¼"
 ];
 function randomWishPos(){
   let left = Math.random()*0.65 + 0.04;
@@ -436,7 +436,7 @@ function showWishDialog(msg){
   setTimeout(()=>{dlg.style.opacity=0; dlg.style.transform += " scale(0.65)";setTimeout(()=>{dlg.remove();},500);},1200+Math.random()*600);
 }
 function showWishes(){
-  let n = 4+Math.floor(Math.random()*4);// 4~7Ìõ
+  let n = 4+Math.floor(Math.random()*4);// 4~7æ¡
   let idxArr = Array.from({length:wishesArr.length}).map((_,i)=>i).sort(()=>Math.random()-0.5).slice(0,n);
   idxArr.forEach((idx,i)=>{
     setTimeout(()=>{showWishDialog(wishesArr[idx]);}, Math.random()*300 + i*180);
