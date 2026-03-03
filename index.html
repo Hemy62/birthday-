@@ -16,6 +16,116 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
+    /* ------【弹窗互动样式】------ */
+    #modal-mask {
+      position: fixed;
+      left:0;top:0;width:100vw;height:100vh;
+      background:rgba(126,126,126,0.05);
+      z-index:800;
+      display:flex;align-items:center;justify-content:center;
+      transition: background 0.3s;
+    }
+    #modal-popup {
+      background:#fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 44px #b6c2ed53;
+      min-width:340px;
+      width: 90vw;
+      max-width:92vw;
+      padding: 38px 34px 26px 34px;
+      border: 1.5px solid #F1F1F7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition:.3s cubic-bezier(.62,1,.75,1.2);
+      min-height: 250px;
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    @media (max-width:540px) {
+      #modal-popup {
+        min-width: unset;
+        width: 96vw;
+        max-width: 97vw;
+        padding: 22px 8vw 18px 8vw;
+      }
+    }
+    #modal-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #4a507e;
+      margin-bottom: 14px;
+      margin-top: 2px;
+      letter-spacing: 1.2px;
+      text-align: center;
+    }
+    #modal-msg {
+      color: #5a6484;
+      text-align: center;
+      font-size: 1.02rem;
+      margin-bottom: 22px;
+      margin-top: -2px;
+      letter-spacing: 0.3px;
+    }
+    .face-svg {
+      width: 78px; height: 78px;
+      display:block;
+      margin: 0 auto 22px auto;
+      transition: all .37s cubic-bezier(.48,2,.32,1.01);
+    }
+    .btn-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap:32px;
+      margin-top: 22px;
+      position: relative;
+    }
+    #modal-yes, #modal-no {
+      font-size: 1.19rem;
+      border:none;
+      outline: none;
+      border-radius: 14px;
+      padding: 0.55em 2.65em;
+      font-weight: 600;
+      color:#fff;
+      background: #5FC87C;
+      box-shadow: 0 2px 13px #62e3aa1c;
+      transition: background .18s, transform .12s;
+      cursor: pointer;
+      margin-bottom: 2px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      opacity: 1;
+      z-index: 10;
+      user-select: none;
+    }
+    #modal-yes {
+      background: #38c759;
+      left: 0;
+      margin-left: 0;
+    }
+    #modal-no {
+      right: 0;
+      left: auto;
+      background: #e84e4f;
+      color:#fff;
+      transition: background .21s, transform .13s, left .3s, top .3s, right .3s;
+      margin-right:0;
+    }
+    #modal-yes:active, #modal-no:active {
+      filter: brightness(.92) saturate(1.2);
+      transform: scale(.98);
+    }
+    /* 不想按钮随机定位用 */
+    #modal-no.random {
+      position: fixed!important;
+      z-index: 1111;
+    }
+
+    /* ------【下方主动画样式为原UI】------ */
     #progress-container {
       position: absolute;
       width: 100vw;
@@ -87,7 +197,7 @@
     @keyframes banner-boom {
       0% { transform: scale(0.2) rotate(-32deg); opacity:0;}
       80% { transform: scale(1.22) rotate(10deg);  opacity:1;}
-      100% {transform:scale(1) rotate(0deg);}
+      100% {transform:scale(1) rotate(0);}
     }
     #particles-canvas {
       position: absolute;
@@ -97,7 +207,6 @@
       background: transparent;
       pointer-events: none;
     }
-    /* 倒计时 */
     #countdown {
       position: absolute;
       left: 50%; top: 63%;
@@ -110,20 +219,19 @@
       transition: opacity .25s;
       text-shadow: 0 4px 25px #5448eb77,0 0 2px #0026;
     }
-    /* 流星雨 */
-    #meteor-canvas {
+    #fireworks-canvas {
       position: absolute;
-      left: 0; top: 0; width: 100vw; height: 100vh;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
       pointer-events: none;
       z-index: 90;
       background: transparent;
       display: none;
     }
-    /* 祝福弹窗 */
     .wish-popup {
       position: fixed;
       z-index: 120;
-      background: linear-gradient(120deg, #14162a 72%, #282838 100%);
+      background: linear-gradient(120deg, #0c1536 67%, #282838 100%);
       border: 1.5px solid #ffffff22;
       min-width: 72px; max-width: 90vw;
       padding:9px 13px 10px 13px;
@@ -155,7 +263,6 @@
         opacity: 1;
       }
     }
-    /* 信封右下角 */
     #envelope-btn {
       position:fixed;
       right:16px;
@@ -168,7 +275,6 @@
       background:none;border:none;padding:0;
     }
     #envelope-btn:active { transform:scale(1.07); }
-    /* 展开的信纸 */
     #letter-modal-bg {
       position:fixed;left:0;top:0;width:100vw;height:100vh;
       background:rgba(12,10,24,0.23);
@@ -191,11 +297,10 @@
       55%{transform:translate(-50%,-53%) scale(1.08);}
       100%{transform:translate(-50%,-50%) scale(1);}
     }
-    /* 信纸主体 */
     #letter-paper {
-      width: 340px;
+      width: 335px;
       max-width: 96vw;
-      min-height: 204px;
+      min-height: 200px;
       background:#fffbe7;
       border-radius:18px;
       box-shadow: 0 7px 54px #0003, 0 6px 32px #c7f9e7a0;
@@ -210,7 +315,7 @@
       position:relative;
       text-align:center;
       border: none;
-      margin-top:16px;
+      margin-top:22px;
     }
     #letter-close {
       position:absolute;
@@ -223,7 +328,6 @@
       cursor:pointer;
       z-index:201;
     }
-    /* 小人装饰 */
     .corner-doll {
       position: absolute;
       bottom: -33px;
@@ -262,22 +366,57 @@
       #letter-paper{font-size:0.98rem;}
       #countdown{font-size:2.2rem;}
       .corner-doll{width:48px;}
+      #modal-popup{min-width:unset;}
     }
-    /* 黑色背景动画 */
     body.night {
       background: #110F19 !important;
-      transition:background 0.55s cubic-bezier(.67,.23,.29,.92);
+      transition:background 0.53s cubic-bezier(.67,.23,.29,.92);
     }
   </style>
 </head>
 <body>
-  <!-- 进度条 -->
-  <div id="progress-container">
+  <!-- 互动弹窗 -->
+  <div id="modal-mask">
+    <div id="modal-popup">
+      <div id="modal-title">小段~</div>
+      <svg class="face-svg" id="svg-face" viewBox="0 0 100 100">
+        <!-- 默认 笑脸 -->
+        <circle cx="50" cy="50" r="42" fill="#FFEEDB"/>
+        <ellipse cx="36" cy="46" rx="6" ry="8" fill="#565284"/>
+        <ellipse cx="64" cy="46" rx="6" ry="8" fill="#565284"/>
+        <!-- 眼神高光 -->
+        <ellipse cx="38.3" cy="44" rx="1.4" ry="1.6" fill="#fff"/>
+        <ellipse cx="61.2" cy="44" rx="1.4" ry="1.6" fill="#fff"/>
+        <!-- 笑嘴 -->
+        <path id="mouth-smile"
+          d="M36 61 Q50 78 64 61"
+          stroke="#fd987c" stroke-width="4.2" fill="none" stroke-linecap="round"/>
+        <!-- 大笑嘴 -->
+        <path id="mouth-laugh"
+          d="M35 60 Q50 89 65 60 Q60 74 40 60"
+          stroke="#fd987c" stroke-width="5" fill="none"
+          stroke-linecap="round" style="opacity:0;"/>
+        <!-- 沮丧嘴 -->
+        <path id="mouth-sad"
+          d="M36 63 Q50 49 64 63"
+          stroke="#fd987c" stroke-width="4.2" fill="none" stroke-linecap="round" style="opacity:0;"/>
+        <!-- 失落眼神 -->
+        <ellipse id="left-sad-eye" cx="36" cy="53" rx="5.7" ry="6.3" fill="#b39daf" opacity="0"/>
+        <ellipse id="right-sad-eye" cx="64" cy="53" rx="5.7" ry="6.3" fill="#b39daf" opacity="0"/>
+      </svg>
+      <div id="modal-msg">是否想看呢</div>
+      <div class="btn-row" id="modal-btn-row">
+        <button id="modal-yes" type="button" style="left:0;">想</button>
+        <button id="modal-no" type="button" style="right:0;">不想</button>
+      </div>
+    </div>
+  </div>
+  <!-- 后续页面 -->
+  <div id="progress-container" class="hide">
     <div id="progress-bar-bg">
       <div id="progress-bar"></div>
     </div>
   </div>
-  <!-- 顶部气球和横幅 -->
   <div id="header">
     <svg class="balloon left" viewBox="0 0 54 78">
       <ellipse cx="27" cy="38" rx="22" ry="34" fill="#ffaaff"/>
@@ -295,9 +434,8 @@
   </div>
   <canvas id="particles-canvas"></canvas>
   <div id="countdown">3</div>
-  <canvas id="meteor-canvas"></canvas>
+  <canvas id="fireworks-canvas"></canvas>
   <!-- 祝福弹窗 -->
-  <!-- 信封右下按钮 -->
   <button id="envelope-btn" aria-label="打开信纸">
     <svg viewBox="0 0 50 38" width="48" height="36">
       <rect width="50" height="38" rx="8" fill="#FFDAD4" />
@@ -306,7 +444,6 @@
       <ellipse cx="25" cy="16" rx="15" ry="6" fill="#FFCDB0" fill-opacity=".66" />
     </svg>
   </button>
-  <!-- 展开信纸(模态窗+信纸+装饰) -->
   <div id="letter-modal-bg"></div>
   <div id="letter-modal">
     <div id="letter-paper">
@@ -334,7 +471,87 @@
     </div>
   </div>
   <script>
-    /** 进度条 **/
+    /** 互动弹窗核心 **/
+    const modalMask = document.getElementById('modal-mask');
+    const modalPopup = document.getElementById('modal-popup');
+    const face = document.getElementById('svg-face');
+    const mouthSmile = document.getElementById('mouth-smile');
+    const mouthSad = document.getElementById('mouth-sad');
+    const mouthLaugh = document.getElementById('mouth-laugh');
+    const sadLeft = document.getElementById('left-sad-eye');
+    const sadRight = document.getElementById('right-sad-eye');
+    const modalYes = document.getElementById('modal-yes');
+    const modalNo = document.getElementById('modal-no');
+    let isSad = false, isLaugh = false, noCount = 0;
+    // 复位表情
+    function setFace(type) {
+      mouthSmile.style.opacity = type==='smile' ? '1' : '0';
+      mouthSad.style.opacity = type==='sad' ? '1' : '0';
+      mouthLaugh.style.opacity = type==='laugh' ? '1' : '0';
+      sadLeft.setAttribute('opacity', type==='sad'?'1':'0');
+      sadRight.setAttribute('opacity', type==='sad'?'1':'0');
+      // 眼睛高光
+      face.querySelectorAll('ellipse').forEach((el,i)=>{
+        if(i===2||i===3) el.setAttribute('opacity', type==='sad'?0.2:1);
+      });
+    }
+    setFace('smile');
+    let modalWidth = 340, modalHeight = 290;
+
+    modalNo.addEventListener('click', function() {
+      setFace('sad');
+      // 随机出现在浏览器窗口任意位置
+      const ww = window.innerWidth, wh = window.innerHeight;
+      const btnW = 102, btnH = 43;
+      let px = Math.floor(Math.random()*(ww-btnW));
+      let py = Math.floor(Math.random()*(wh-btnH));
+      // 随机允许部分落在弹窗内, 但有可能全局任意
+      modalNo.classList.add('random');
+      modalNo.style.position = 'fixed';
+      modalNo.style.left = px+'px';
+      modalNo.style.top = py+'px';
+      modalNo.style.right = 'auto';
+      modalNo.textContent = '不想';
+      noCount++;
+      // 每次 "不想" 持续平滑转场
+      modalNo.style.transition = 'left .35s cubic-bezier(.5,1,.28,1), top .38s, background .18s, transform .13s';
+    });
+
+    modalYes.addEventListener('click', function() {
+      setFace('laugh');
+      modalYes.disabled = true;
+      modalNo.disabled = true;
+      // 按钮active效果
+      modalYes.style.transform = "scale(1.07)";
+      setTimeout(() => { modalYes.style.transform=""; }, 220);
+      mouthLaugh.style.opacity = 1;
+      setTimeout(()=>{
+        // 弹窗消失,进入进度条
+        modalMask.style.opacity = '0';
+        modalMask.style.pointerEvents = 'none';
+        setTimeout(() => {
+          modalMask.style.display = "none";
+          document.getElementById('progress-container').classList.remove('hide');
+          setTimeout(()=>{ startProgressBar(); }, 80);
+        }, 320);
+      }, 970);
+    });
+
+    // 弹窗保证modal-no永不挡住"想"按钮
+    window.addEventListener('resize', ()=>{
+      if(modalNo.classList.contains('random')){
+        // 重新随机
+        modalNo.click();
+      }
+    });
+
+    // ==========主动画部分,内容同之前,烟花==========
+    let started = false;
+    function startProgressBar(){
+      if(started) return; started = true;
+      progress = 0;
+      doProgressBar();
+    }
     const progressBar = document.getElementById('progress-bar');
     const progressContainer = document.getElementById('progress-container');
     let progress = 0;
@@ -351,9 +568,9 @@
         }, 360);
       }
     }
-    setTimeout(doProgressBar, 300);
 
-    /** 粒子动画，大字 **/
+    // 粒子文字等同旧内容...
+    // 下略：粒子字动画
     const pc = document.getElementById('particles-canvas');
     let pr,pg;
     function fitParticleCanvas() {
@@ -364,7 +581,6 @@
     } fitParticleCanvas();
     window.addEventListener("resize", fitParticleCanvas);
 
-    // 粒子字动画流程——修改为"段万军 祝你 生日快乐~"
     let psStage = 0;
     let particles = [];
     const wordList = [
@@ -425,25 +641,25 @@
       return [x,y];
     }
     function setParticleTargets(state) {
-      if(state===0) { // scatter
+      if(state===0) {
         particles.forEach((p,i)=>{ 
           let xy = scatterTarget(i,particles.length); 
           p.tx = xy[0]; 
           p.ty = xy[1]; 
         });
-      } else if(state===1) { // 段万军
+      } else if(state===1) {
         let wordPs = spawnParticlesForWord(wordList[0].word,wordList[0].font,particles.length);
         particles.forEach((p,i)=>{
           let tgt = wordPs[i].target;
           p.tx = tgt[0]; p.ty = tgt[1];
         });
-      } else if(state===2) { // 祝你
+      } else if(state===2) {
         let wordPs = spawnParticlesForWord(wordList[1].word,wordList[1].font,particles.length);
         particles.forEach((p,i)=>{
           let tgt = wordPs[i].target;
           p.tx = tgt[0]; p.ty = tgt[1];
         });
-      } else if(state===3) { // 生日快乐~
+      } else if(state===3) {
         let wordPs = spawnParticlesForWord(wordList[2].word,wordList[2].font,particles.length);
         particles.forEach((p,i)=>{
           let tgt = wordPs[i].target;
@@ -462,12 +678,11 @@
       setParticleTargets(0);
       pc.style.display='block';
       requestAnimationFrame(particleRenderLoop);
-      // 动画：段万军1.1s->分散0.65s->祝你0.8s->分0.65s->生日快乐1.3s
       setTimeout(()=>{psStage=1;setParticleTargets(1);},650);
       setTimeout(()=>{psStage=0;setParticleTargets(0);},1750);
-      setTimeout(()=>{psStage=2;setParticleTargets(2);},2380); //祝你
+      setTimeout(()=>{psStage=2;setParticleTargets(2);},2380);
       setTimeout(()=>{psStage=0;setParticleTargets(0);},3170);
-      setTimeout(()=>{psStage=3;setParticleTargets(3);},3770); //生日快乐
+      setTimeout(()=>{psStage=3;setParticleTargets(3);},3770);
       setTimeout(()=>{
         pc.style.display='none';
         showCountdownStage();
@@ -479,7 +694,6 @@
       ctx.clearRect(0,0,pr,pg);
       ctx.save();
       for(let p of particles){
-        // 粒子运动
         let dx = p.tx - p.x, dy = p.ty - p.y;
         let dist = Math.sqrt(dx*dx+dy*dy);
         let spd = 0.13 + 0.29*(dist>48?1:Math.max(0.07,dist/80));
@@ -500,9 +714,8 @@
       ctx.restore();
       requestAnimationFrame(particleRenderLoop);
     }
-    /** 花，阶段作废 **/
 
-    /** [倒计时3,2,1,流星雨] **/
+    /** 倒计时3-2-1 然后黑 夜空，放烟花 **/
     const countdownEl = document.getElementById('countdown');
     function showCountdownStage(){
       countdownEl.textContent = '3';
@@ -513,136 +726,89 @@
           countdownEl.textContent = '1';
           setTimeout(()=>{
             countdownEl.style.opacity = 0;
-            document.body.classList.add('night'); //背景变黑
+            document.body.classList.add('night'); // 黑色背景
             setTimeout(()=>{
-              showMeteorAndWishes();
+              showFireworksAndWishes();
             }, 350);
-          }, 950);
-        },920);
-      },950);
+          }, 940);
+        },910);
+      },930);
     }
-    /** ==============流星雨动画-夜空特效================== **/
-    const meteorCanvas = document.getElementById('meteor-canvas');
-    let meteors = [];
-    function showMeteorAndWishes() {
-      meteorCanvas.style.display='block';
-      meteorCanvas.width = window.innerWidth;
-      meteorCanvas.height = window.innerHeight;
-      meteors = [];
-      for(let i=0;i<22;i++){
-        setTimeout(()=>{
-          spawnMeteor();
-        }, i*180+Math.random()*250);
+    // ---------------------------烟花动画------------------------------
+    const fireworkCanvas = document.getElementById('fireworks-canvas');
+    let fireworks = [];
+    function showFireworksAndWishes() {
+      fireworkCanvas.style.display='block';
+      fireworkCanvas.width = window.innerWidth;
+      fireworkCanvas.height = window.innerHeight;
+      fireworks = [];
+      for(let i=0;i<7;i++){
+        setTimeout(()=>{ spawnFirework(); }, i*410 + Math.random()*260);
       }
-      requestAnimationFrame(meteorRenderLoop);
-      setTimeout(()=>{ showWishPopups(); }, 900);
+      requestAnimationFrame(fireworksRenderLoop);
+      setTimeout(()=>{ showWishPopups(); }, 1150);
     }
-    function spawnMeteor(){
-      // 起点(夜空上部，方向左高右下)
-      let w = meteorCanvas.width, h = meteorCanvas.height;
-      let x0 = 40+Math.random()*(w-80);
-      let y0 = Math.random()*55; // 夜空快顶部
-      let len = 172+Math.random()*90;
-      let angle = Math.PI/2.8 + (Math.random()-0.5)*0.16;
-      let v = 8.2+Math.random()*3.2; // 随机初速
-      let dx = Math.cos(angle) * v, dy = Math.sin(angle) * v;
-      let c = `hsl(${198+Math.random()*120},96%,80%)`;
-      meteors.push({
-        x: x0, y: y0,
-        dx, dy,
-        len, // 轨迹长度
-        progress: 0,
-        tail: [],
-        bright: 1+Math.random()*0.18,
-        color: c
-      });
+    function spawnFirework() {
+      let x = 60+Math.random()*(fireworkCanvas.width-120);
+      let y = 80+Math.random()*(fireworkCanvas.height-260);
+      let color = `hsl(${Math.random()*360},93%,79%)`;
+      let pN = 28+Math.random()*29|0;
+      let parts = [];
+      let velocity = 7.5 + Math.random()*2.7;
+      for(let i=0;i<pN;i++) {
+        let a = i/pN*Math.PI*2;
+        let v = velocity*(0.7 + 0.33*Math.random());
+        let vx = Math.cos(a)*v * (0.86+Math.random()*0.16);
+        let vy = Math.sin(a)*v * (0.82+Math.random()*0.2);
+        parts.push({
+          x:x,y:y, vx: vx,vy: vy, life:0,
+          maxLife: 36+Math.random()*25,
+          color: color
+        });
+      }
+      fireworks.push({parts,t:0});
     }
-    function meteorRenderLoop(){
-      let ctx = meteorCanvas.getContext('2d');
-      // 夜空微底色带星点
+    function fireworksRenderLoop(){
+      let ctx = fireworkCanvas.getContext('2d');
       ctx.globalAlpha = 1;
-      ctx.fillStyle = '#101226e6';
-      ctx.fillRect(0,0,meteorCanvas.width,meteorCanvas.height);
-      drawStars(ctx, meteorCanvas.width, meteorCanvas.height);
-      // 流星
-      for(let i=meteors.length-1;i>=0;i--){
-        let m = meteors[i];
-        // 亮头部，拖尾（增加尾部点以实现流光）
-        m.x += m.dx; m.y += m.dy;
-        // 累计尾部点
-        m.tail.push({x:m.x,y:m.y});
-        if(m.tail.length>Math.floor(m.len/2))m.tail.shift();
-        ctx.save();
-        // 尾巴流光
-        let grad=ctx.createLinearGradient(m.tail[0]?.x||m.x,m.tail[0]?.y||m.y,m.x,m.y);
-        grad.addColorStop(0,'#fff2');
-        grad.addColorStop(0.3, m.color);
-        grad.addColorStop(0.62, '#fff8');
-        grad.addColorStop(1,'#fff0');
-        ctx.strokeStyle=grad;
-        ctx.globalAlpha = 0.46;
-        ctx.lineWidth=8.7;
-        ctx.beginPath();
-        for(let j=0;j<m.tail.length;j++){
-          if(j===0) ctx.moveTo(m.tail[j].x, m.tail[j].y);
-          else ctx.lineTo(m.tail[j].x, m.tail[j].y);
+      ctx.fillStyle = "#121231f4";
+      ctx.fillRect(0, 0, fireworkCanvas.width, fireworkCanvas.height);
+      // 所有烟花
+      for (let fw of fireworks) {
+        for (let p of fw.parts) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.09;
+          let fade = Math.max(0, 1 - p.life/p.maxLife);
+          // 拖尾
+          ctx.save();
+          ctx.globalAlpha = fade*0.29;
+          ctx.beginPath();
+          ctx.arc(p.x-p.vx*7, p.y-p.vy*7, 7.6*fade, 0, 2*Math.PI);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur=16;
+          ctx.shadowColor=p.color;
+          ctx.fill();
+          ctx.restore();
+          // 本体
+          ctx.save();
+          ctx.globalAlpha = fade*1.12;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3.2+fade*3.3, 0, 2*Math.PI);
+          ctx.fillStyle = p.color;
+          ctx.shadowBlur=22;
+          ctx.shadowColor=p.color;
+          ctx.fill();
+          ctx.restore();
+          p.life++;
         }
-        ctx.lineTo(m.x,m.y);
-        ctx.stroke();
-        // 细拖尾主线
-        ctx.globalAlpha = 0.81;
-        ctx.lineWidth=2.7;
-        ctx.beginPath();
-        ctx.moveTo(m.tail[0]?.x||m.x, m.tail[0]?.y||m.y);
-        ctx.lineTo(m.x, m.y);
-        ctx.strokeStyle='#fffbdc';
-        ctx.stroke();
-        // 亮点头部
-        ctx.globalAlpha = 0.81;
-        ctx.beginPath();
-        ctx.arc(m.x, m.y+1, (Math.random()*6.5+6.2)*m.bright, 0, 2*Math.PI);
-        ctx.globalAlpha = 0.94;
-        ctx.shadowBlur = 24;
-        ctx.shadowColor = '#fffca3';
-        ctx.fillStyle = '#fffbe3';
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1;
-        ctx.restore();
-        m.progress++;
-        if(m.x>meteorCanvas.width+180||m.y>meteorCanvas.height+48) meteors.splice(i,1);
+        fw.t++;
       }
-      if(meteors.length<14&&Math.random()<0.10)spawnMeteor();
-      if(meteorCanvas.style.display==='block') requestAnimationFrame(meteorRenderLoop);
+      if(Math.random()<0.048) spawnFirework();
+      requestAnimationFrame(fireworksRenderLoop);
     }
-    function drawStars(ctx,w,h){
-      for(let i=0;i<11;i++){
-        let x = Math.random()*w, y = Math.random()*h*0.78;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(x,y,0.5+Math.random()*1.4,0,2*Math.PI);
-        ctx.globalAlpha = 0.22+Math.random()*0.22;
-        ctx.fillStyle='#fff';
-        ctx.shadowBlur = 7+Math.random()*8;
-        ctx.shadowColor = '#fff';
-        ctx.fill();
-        ctx.restore();
-      }
-      // sporadic bright star
-      if(Math.random()<0.05){
-        let rx = Math.random()*w, ry = Math.random()*h*0.79;
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(rx,ry,1.6+Math.random()*2.4,0,2*Math.PI);
-        ctx.globalAlpha=0.17+Math.random()*0.17;
-        ctx.fillStyle='#fff7f9';
-        ctx.shadowBlur=19;
-        ctx.shadowColor='#feffdc';
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-    /** 祝福弹窗-多条小字 **/
+
+    /** 祝福弹窗 **/
     const wishArr = [
       '生日快乐~🎂','梦想成真','好运常伴','越来越帅','天天开心','心想事成','万事顺遂','平安健康',
       '喜乐无忧','学业进步','事业有成','遇见美好','烦恼远离','生活甜如蜜','身体棒棒哒',
@@ -683,13 +849,11 @@
       wishTimeouts.forEach(x=>clearTimeout(x));
       wishTimeouts=[];
     }
-
     /** 信封右下角/信纸弹窗 **/
     const envBtn = document.getElementById('envelope-btn');
     const letterModalBg = document.getElementById('letter-modal-bg');
     const letterModal = document.getElementById('letter-modal');
     const letterClose = document.getElementById('letter-close');
-    // 小人互动-点击挥手/缩放
     let dollAnimState = false;
     letterModal.querySelector('.corner-doll').addEventListener('click',function(){
       if(!dollAnimState){
@@ -715,6 +879,11 @@
     envBtn.addEventListener('click', showLetterModal);
     letterModalBg.addEventListener('click', closeLetterModal);
     letterClose.addEventListener('click', closeLetterModal);
+    // 启动只显示弹窗
+    window.onload = function() {
+      modalMask.style.opacity='1';
+      document.getElementById('progress-container').classList.add('hide');
+    }
   </script>
 </body>
 </html>
